@@ -1,0 +1,5 @@
+-lib audio-player
+-lib audio-decoder
+-cp src
+-js bin/js/bin/app.js
+-main OggSample

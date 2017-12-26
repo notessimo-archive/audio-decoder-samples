@@ -1,2 +1,5 @@
 # audio-decoder-samples
-Samples on how to use the audio-decoder
+
+Samples for `audio-decoder` haxe library
+
+To compile: `haxe hxml/js.hxml` or `openfl test html5` inside the sample directory
