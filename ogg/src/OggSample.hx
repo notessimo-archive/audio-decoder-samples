@@ -24,28 +24,31 @@ using NumberTools;
         var start = 0;
         var end = decoder.length;
 
-        var length = file.length;
-
         trace('DECODING', end - start, file.length);
 
+        // Decode the whole sample for testing
         @await decoder.decodeAll();
-
-        decoder.startSample(0);
 
         var n = 0;
         var volume = 0.3;
-        
+        var yoyo = 1;
+
         // Create a sin wave audio source
         var audio = AudioPlayer
             .create()
             .useGenerator((out, sampleRate) -> for( i in 0...out.length >> 1 ) {
-                var left = decoder.nextSample() * volume;
-                var right = decoder.nextSample() * volume;
+                var left = decoder.getSample(n, 0) * volume;
+                var right = decoder.getSample(n, 1) * volume;
                 
                 out.set(i*2, left);
                 out.set(i*2 + 1, right);
+
+                n += yoyo;
                 
-                n++;
+                if (n >= end || n <= 0) {
+                    yoyo *= -1;
+                    n += yoyo;
+                }
             })
             .play();
 
