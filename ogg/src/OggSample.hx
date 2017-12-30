@@ -18,6 +18,7 @@ using NumberTools;
         var file = @await File.load('assets/test.ogg');
 
         Decoder.webAudioEnabled = true;
+
         var decoder = new OggDecoder(file);
 
         var start = 0;
@@ -27,32 +28,29 @@ using NumberTools;
 
         trace('DECODING', end - start, file.length);
 
-        decoder.decodeAll(function()
-        {
-            var wav = decoder.getWAV();
+        @await decoder.decodeAll();
 
-            decoder.startSample(0);
+        decoder.startSample(0);
 
-            var n = 0;
-            var volume = 0.3;
-            
-            // Create a sin wave audio source
-            var audio = AudioPlayer
-                .create()
-                .useGenerator((out, sampleRate) -> for( i in 0...out.length >> 1 ) {
-                    var left = decoder.nextSample();
-                    var right = decoder.nextSample();
-                    
-                    out.set(i*2, left);
-                    out.set(i*2 + 1, right);
-                    
-                    n++;
-                })
-                .play();
+        var n = 0;
+        var volume = 0.3;
+        
+        // Create a sin wave audio source
+        var audio = AudioPlayer
+            .create()
+            .useGenerator((out, sampleRate) -> for( i in 0...out.length >> 1 ) {
+                var left = decoder.nextSample() * volume;
+                var right = decoder.nextSample() * volume;
+                
+                out.set(i*2, left);
+                out.set(i*2 + 1, right);
+                
+                n++;
+            })
+            .play();
 
-            // Stop it after 3 seconds
-            Timer.delay(() -> audio.stop(), DateTools.seconds(3).int());
-        });
+        // Stop it after 3 seconds
+        Timer.delay(() -> audio.stop(), DateTools.seconds(3).int());
     }
 
     // Main entry point
